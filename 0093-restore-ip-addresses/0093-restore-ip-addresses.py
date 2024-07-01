@@ -1,27 +1,27 @@
 class Solution:
+    def restoreIpAddresses(self, s: str) -> List[str]:
+        ans = []
+        n = len(s)
+        if not (4 <= n <= 12):
+            return ans
 
-    @cache
-    def solve(self , i ,prev , ip) :
+        def backtrack(ip, start, dots):
+            octet_length = octet_value = 0
+            for i in range(start, min(n, start+3)):
+                ip.append(s[i])
+                octet_length += 1
+                octet_value = octet_value * 10 + int(s[i])
+                if (octet_length > 1 and ip[-octet_length] == '0') or octet_value > 255:
+                    return octet_length
+                if i + 1 == n and not dots:
+                    ans.append(''.join(ip))
+                elif (n-1) - i <= (dots-1) * 3 + 3:
+                    ip.append('.')
+                    last_octet_length = backtrack(ip, i+1, dots-1)
+                    for _ in range(last_octet_length + 1):
+                        ip.pop()
 
-        if i >= len(self.s) :
-            if ip.count(".") == 3 :
-                l = list(map(str , ip.split(".")))
+            return octet_length
 
-                lis = [1 if ( x!="" and  (x[0]!="0" or x=="0") and int(x)>=0 and int(x)<=255 ) else 0 for x in l ]
-                if sum(lis) == 4 :
-                    self.ans += [ip]
-            return 
-
-        self.solve(i+1 , prev + self.s[i] , ip + self.s[i])
-        if i<len(self.s):
-            self.solve(i+1 , self.s[i] , ip + self.s[i] + ".")
-
-        return 
-
-
-    def restoreIpAddresses(self, s: str) -> List[str]: 
-        self.s = s 
-        self.ans = []
-        self.solve(0,"","")
-        return self.ans
-        
+        backtrack([], 0, 3)
+        return ans
