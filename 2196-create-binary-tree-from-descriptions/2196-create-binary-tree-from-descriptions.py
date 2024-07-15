@@ -1,27 +1,30 @@
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
 class Solution:
-    def createBinaryTree(self, descriptions: list[list[int]]) -> Optional[TreeNode]:
-        def construct_tree(cur_node_val):
-            new_node = TreeNode(cur_node_val)
-            if cur_node_val in children_hashmap:
-                if children_hashmap[cur_node_val][0] is not None:
-                    new_node.left = construct_tree(children_hashmap[cur_node_val][0])
-                if children_hashmap[cur_node_val][1] is not None:
-                    new_node.right = construct_tree(children_hashmap[cur_node_val][1])
-            return new_node
+    def createBinaryTree(self, descriptions: List[List[int]]) -> Optional[TreeNode]:
+        root, n= -1, len(descriptions)
+        parent={}
+        node={}
 
-        children_set = set()
-        children_hashmap: dict[int, list[int]] = {}
+        for x, y, l in descriptions:
+            if x not in node:
+                node[x]=TreeNode(x)
+                if x not in parent:
+                    root=x
+            if y not in node:
+                node[y]=TreeNode(y)
+            parent[y]=x
+            if l:
+                node[x].left=node[y]
+            else:
+                node[x].right=node[y]
 
-        for parent, child, isleft in descriptions:
-            if not parent in children_hashmap:
-                children_hashmap[parent] = [None, None]  # left and right
-            children_set.add(child)
-            target = 0 if isleft else 1
-            children_hashmap[parent][target] = child
+        while root in parent:
+            root=parent[root]
 
-        for parent in children_hashmap:
-            if parent not in children_set:
-                head_node_val: int = parent
-                break
-        head = construct_tree(head_node_val)
-        return head
+        return node[root]
+        
